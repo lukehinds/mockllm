@@ -1,9 +1,41 @@
-# Mock LLM Server
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png">
+    <img alt="mockllm logo" src="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png" width="486px" height="150spx" style="max-width: 100%;">
+  </picture>
+  <h3>MockLLM API's of Providers such as OpenAI, Anthropic</h3>
 
-[![CI](https://github.com/stacklok/mockllm/actions/workflows/ci.yml/badge.svg)](https://github.com/stacklok/mockllm/actions/workflows/ci.yml)
-[![PyPI version](https://badge.fury.io/py/mockllm.svg)](https://badge.fury.io/py/mockllm)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![mockllm-logo](assets/logo.png)
+  <!-- CTA Buttons -->
+  <p>
+    <a href="https://github.com/lukehinds/mockllm/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">
+      <img src="https://img.shields.io/badge/Contribute-Good%20First%20Issues-green?style=for-the-badge&logo=github" alt="Good First Issues"/>
+    </a>
+    &nbsp;
+    <a href="https://discord.gg/pPcjYzGvbS">
+      <img src="https://img.shields.io/badge/Chat-Join%20Discord-7289da?style=for-the-badge&logo=discord&logoColor=white" alt="Join Discord"/>
+    </a>
+  </p>
+
+  <!-- Badges -->
+  <p>
+    <a href="https://opensource.org/licenses/Apache-2.0">
+      <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"/>
+    </a>
+    <a href="https://github.com/lukehinds/mockllm/actions/workflows/test.yml">
+      <img src="https://github.com/lukehinds/mockllm/actions/workflows/test.yml/badge.svg" alt="CI Status"/>
+    </a>
+    <a href="https://pypi.org/project/mockllm/">
+      <img src="https://img.shields.io/pypi/v/mockllm.svg" alt="PyPI Version"/>
+    </a>
+    <a href="https://pepy.tech/project/mockllm">
+      <img src="https://static.pepy.tech/badge/mockllm" alt="Downloads"/>
+    </a>
+    <a href="https://discord.gg/pPcjYzGvbS">
+      <img src="https://img.shields.io/discord/1384081906773131274?color=7289da&label=Discord&logo=discord&logoColor=white" alt="Discord"/>
+    </a>
+  </p>
+  <br/>
+</div>
 
 An LLM simulator that mimics OpenAI and Anthropic API formats. Instead of calling
 a large language model, it uses predefined responses from a YAML configuration
@@ -72,7 +104,7 @@ pip install mockllm
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/stacklok/mockllm.git
+git clone https://github.com/lukehinds/mockllm.git
 cd mockllm
 ```
 
@@ -199,8 +231,6 @@ poetry run pytest
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a PR.
-
-Check out the [CodeGate](https://github.com/stacklok/codegate) project when you're done here!
 
 ## License
 

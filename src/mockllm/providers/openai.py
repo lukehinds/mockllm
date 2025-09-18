@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator, Dict, Union
+from typing import Any, AsyncGenerator, Dict, List, Union
 
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
@@ -11,13 +11,60 @@ from ..models import (
     OpenAIStreamChoice,
     OpenAIStreamResponse,
 )
-from ..utils import count_tokens
+from ..provider_utils import (
+    calculate_usage,
+    extract_prompt_from_messages,
+)
+from ..registry import register_provider
 from .base import LLMProvider
 
 
+@register_provider(
+    name="openai",
+    version="1.0.0",
+    description="OpenAI Chat Completions API provider",
+    endpoints=[
+        {
+            "path": "/v1/chat/completions",
+            "method": "POST",
+            "handler": "handle_chat_completion",
+        }
+    ],
+    supported_models=[
+        "gpt-3.5-turbo",
+        "gpt-4",
+        "gpt-4-turbo",
+        "gpt-4o",
+        "gpt-4o-mini",
+    ],
+    capabilities={
+        "streaming": True,
+        "function_calling": True,
+        "vision": True,
+    },
+)
 class OpenAIProvider(LLMProvider):
     def __init__(self, response_config: ResponseConfig):
+        super().__init__(response_config)
         self.response_config = response_config
+
+    def get_supported_models(self) -> List[str]:
+        return [
+            "gpt-3.5-turbo",
+            "gpt-4",
+            "gpt-4-turbo",
+            "gpt-4o",
+            "gpt-4o-mini",
+        ]
+
+    def get_endpoints(self) -> List[Dict[str, Any]]:
+        return [
+            {
+                "path": "/v1/chat/completions",
+                "method": "POST",
+                "handler": "handle_chat_completion",
+            }
+        ]
 
     async def generate_stream_response(
         self, content: str, model: str
@@ -49,28 +96,28 @@ class OpenAIProvider(LLMProvider):
     async def handle_chat_completion(
         self, request: OpenAIChatRequest
     ) -> Union[Dict[str, Any], StreamingResponse]:
-        last_message = next(
-            (msg for msg in reversed(request.messages) if msg.role == "user"), None
-        )
+        prompt = extract_prompt_from_messages(request.messages)
 
-        if not last_message:
-            raise HTTPException(
-                status_code=400, detail="No user message found in request"
+        if not prompt:
+            last_message = next(
+                (msg for msg in reversed(request.messages) if msg.role == "user"), None
             )
+            if last_message:
+                prompt = last_message.content
+            else:
+                raise HTTPException(
+                    status_code=400, detail="No user message found in request"
+                )
 
         if request.stream:
+            response_content = self.get_response_for_prompt(prompt)
             return StreamingResponse(
-                self.generate_stream_response(last_message.content, request.model),
+                self.generate_stream_response(response_content, request.model),
                 media_type="text/event-stream",
             )
 
-        response_content = await self.response_config.get_response_with_lag(
-            last_message.content
-        )
-
-        prompt_tokens = count_tokens(str(request.messages), request.model)
-        completion_tokens = count_tokens(response_content, request.model)
-        total_tokens = prompt_tokens + completion_tokens
+        response_content = await self.response_config.get_response_with_lag(prompt)
+        usage = calculate_usage(str(request.messages), response_content, request.model)
 
         return OpenAIChatResponse(
             model=request.model,
@@ -81,9 +128,5 @@ class OpenAIProvider(LLMProvider):
                     "finish_reason": "stop",
                 }
             ],
-            usage={
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-                "total_tokens": total_tokens,
-            },
+            usage=usage,
         ).model_dump()

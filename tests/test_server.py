@@ -10,10 +10,18 @@ responses:
 """
 
 # Create a patch for ResponseConfig before importing server
-with patch("builtins.open", mock_open(read_data=MOCK_YAML_CONTENT)), patch(
-    "os.path.exists", return_value=True
-), patch("mockllm.config.ResponseConfig.load_responses"):
-    from mockllm.server import app
+with (
+    patch("builtins.open", mock_open(read_data=MOCK_YAML_CONTENT)),
+    patch("os.path.exists", return_value=True),
+    patch("mockllm.config.ResponseConfig.load_responses"),
+):
+    import mockllm.server
+    from mockllm.server import ResponseConfig, app, load_providers, setup_dynamic_routes
+
+    # Initialize for testing
+    mockllm.server.response_config = ResponseConfig()
+    load_providers()
+    setup_dynamic_routes()
 
 client = TestClient(app)
 
@@ -21,9 +29,11 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def mock_responses_file():
     # Update the fixture to also patch ResponseConfig.load_responses
-    with patch("builtins.open", mock_open(read_data=MOCK_YAML_CONTENT)), patch(
-        "os.path.exists", return_value=True
-    ), patch("mockllm.config.ResponseConfig.load_responses"):
+    with (
+        patch("builtins.open", mock_open(read_data=MOCK_YAML_CONTENT)),
+        patch("os.path.exists", return_value=True),
+        patch("mockllm.config.ResponseConfig.load_responses"),
+    ):
         yield
 
 
@@ -89,4 +99,6 @@ def test_invalid_request():
     response = client.post(
         "/v1/chat/completions", json={"model": "mock-llm", "messages": []}
     )
-    assert response.status_code == 500
+    assert (
+        response.status_code == 400
+    )  # Bad Request is more appropriate for invalid input
