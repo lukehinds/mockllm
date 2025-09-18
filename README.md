@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png">
-    <img alt="mockllm logo" src="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png" width="486px" height="150spx" style="max-width: 100%;">
+    <img alt="mockllm logo" src="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png" width="500px" height="500px" style="max-width: 100%;">
   </picture>
   <h3>MockLLM API's of Providers such as OpenAI, Anthropic</h3>
 
