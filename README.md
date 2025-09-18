@@ -100,6 +100,28 @@ curl -X POST http://localhost:8000/v1/chat/completions \
     "model": "gpt-3.5-turbo",
     "messages": [{"role": "user", "content": "Hello"}]
   }'
+
+{
+  "id": "mock-41c551b6-148f-49a2-abca-f990c1a9cfab",
+  "object": "chat.completion",
+  "created": 1758199276,
+  "model": "gpt-3.5-turbo",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "15+15 equals 42."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 18,
+    "completion_tokens": 7,
+    "total_tokens": 25
+  }
+}
 ```
 
 ### Creating a Custom Provider
