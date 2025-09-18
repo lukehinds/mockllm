@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png">
-    <img alt="mockllm logo" src="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png" width="500px" height="500px" style="max-width: 100%;">
+    <img alt="mockllm logo" src="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png" width="300px" height="300px" style="max-width: 100%;">
   </picture>
   <h3>MockLLM API's of Providers such as OpenAI, Anthropic</h3>
 
@@ -22,7 +22,7 @@
       <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"/>
     </a>
     <a href="https://github.com/lukehinds/mockllm/actions/workflows/test.yml">
-      <img src="https://github.com/lukehinds/mockllm/actions/workflows/test.yml/badge.svg" alt="CI Status"/>
+      <img src="https://github.com/lukehinds/mockllm/actions/workflows/ci.yml/badge.svg" alt="CI Status"/>
     </a>
     <a href="https://pypi.org/project/mockllm/">
       <img src="https://img.shields.io/pypi/v/mockllm.svg" alt="PyPI Version"/>
