@@ -80,7 +80,9 @@ Perfect for when you need deterministic, configurable responses for testing and 
 ```bash
 # Install MockLLM
 pip install mockllm
+```
 
+```bash
 # Create responses file
 cat > responses.yml << EOF
 responses:
@@ -89,10 +91,14 @@ responses:
 defaults:
   unknown_response: "This is a mock response."
 EOF
+```
 
+```bash
 # Start the server
 mockllm start --responses responses.yml
+```
 
+```bash
 # Test with curl
 curl -X POST http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -100,7 +106,11 @@ curl -X POST http://localhost:8000/v1/chat/completions \
     "model": "gpt-3.5-turbo",
     "messages": [{"role": "user", "content": "Hello"}]
   }'
+```
 
+A full mocked response is returned, along with timestamps, token usage.
+
+```json
 {
   "id": "mock-41c551b6-148f-49a2-abca-f990c1a9cfab",
   "object": "chat.completion",
