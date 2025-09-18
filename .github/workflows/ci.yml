@@ -22,21 +22,19 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
       with:
-        version: latest
-        virtualenvs-create: true
-        virtualenvs-in-project: true
+        version: "latest"
 
     - name: Install dependencies
-      run: poetry install --with dev
+      run: uv sync --extra dev
 
     - name: Run tests
       run: |
         # Verify test_responses.yml exists
         # test -f tests/test_responses.yml || (echo "tests/test_responses.yml not found" && exit 1)
-        poetry run pytest tests/ -v
+        uv run pytest tests/ -v
 
   lint:
     runs-on: ubuntu-latest
@@ -48,23 +46,21 @@ jobs:
       with:
         python-version: "3.10"
 
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
       with:
-        version: latest
-        virtualenvs-create: true
-        virtualenvs-in-project: true
+        version: "latest"
 
     - name: Install dependencies
-      run: poetry install --with dev
+      run: uv sync --extra dev
 
     - name: Check formatting
       run: |
-        poetry run black --check .
-        poetry run isort --check .
+        uv run black --check .
+        uv run isort --check .
 
     - name: Type checking
-      run: poetry run mypy src/
+      run: uv run mypy src/
 
     - name: Lint
-      run: poetry run ruff check .
+      run: uv run ruff check .

@@ -1,66 +1,66 @@
-[tool.poetry]
+[project]
 name = "mockllm"
 version = "0.0.8"
 description = "A mock server that mimics OpenAI and Anthropic API formats for testing"
-authors = ["Luke Hinds <luke@stacklok.com>"]
-license = "Apache-2.0"
-readme = "README.md"
-repository = "https://github.com/stacklok/mockllm"
-homepage = "https://github.com/stacklok/mockllm"
-keywords = ["mock", "llm", "openai", "anthropic", "testing"]
-packages = [
-    { include = "mockllm", from = "src" }
+authors = [
+    { name = "Luke Hinds", email = "luke@rdrocket.com" }
 ]
+license = { text = "Apache-2.0" }
+readme = "README.md"
+keywords = ["mock", "llm", "openai", "anthropic", "testing"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Testing",
 ]
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.68.0",
+    "uvicorn>=0.15.0",
+    "pydantic>=2.0.0",
+    "python-json-logger>=2.0.0",
+    "pyyaml>=5.4.1",
+    "watchdog>=2.1.0",
+    "httpx>=0.28.1",
+    "tiktoken>=0.9.0",
+    "click>=8.1.0",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10"
-fastapi = ">=0.68.0"
-uvicorn = ">=0.15.0"
-pydantic = ">=2.0.0"
-python-json-logger = ">=2.0.0"
-pyyaml = ">=5.4.1"
-watchdog = ">=2.1.0"
-httpx = "^0.28.1"
-tiktoken = "^0.9.0"
-click = "^8.1.0"
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-asyncio>=0.15.0",
+    "pytest-mock>=3.10.0",
+    "mypy>=0.900",
+    "ruff>=0.1.0",
+    "types-PyYAML>=6.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = ">=6.0"
-pytest-asyncio = ">=0.15.0"
-pytest-mock = ">=3.10.0"
-black = ">=21.0"
-isort = ">=5.0"
-mypy = ">=0.900"
-ruff = ">=0.1.0"
-types-PyYAML = ">=6.0"
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocstrings[python]>=0.24.0",
+    "pymdown-extensions>=10.0",
+    "mkdocs-material>=9.6.20",
+    "mkdocstrings>=0.30.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/lukehinds/mockllm"
+Repository = "https://github.com/lukehinds/mockllm"
+
+[project.scripts]
+mockllm = "mockllm.cli:main"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-line-length = 88
-target-version = ["py38"]
-include = '\.pyi?$'
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-line_length = 88
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -68,9 +68,7 @@ check_untyped_defs = true
 
 [tool.ruff]
 line-length = 88
-target-version = "py38"
+target-version = "py310"
 lint.select = ["E", "F", "B", "I"]
 lint.ignore = []
 
-[tool.poetry.scripts]
-mockllm = "mockllm.cli:main"

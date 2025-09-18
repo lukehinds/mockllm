@@ -5,32 +5,30 @@ all: setup lint test
 
 # Setup development environment
 setup:
-	poetry install --with dev
+	uv sync --extra dev
 
 # Run tests
 test:
-	poetry run pytest tests/ -v
+	uv run pytest tests/ -v
 
 # Run all linting and type checking
 lint: format-check lint-check type-check
 
 # Format code
 format:
-	poetry run black .
-	poetry run isort .
+	uv run ruff format .
 
 # Check formatting
 format-check:
-	poetry run black --check .
-	poetry run isort --check .
+	uv run ruff check . --fix --diff --exit-zero
 
 # Run linting
 lint-check:
-	poetry run ruff check .
+	uv run ruff check .
 
 # Run type checking
 type-check:
-	poetry run mypy src/
+	uv run mypy src/
 
 # Clean up
 clean:
@@ -44,30 +42,30 @@ clean:
 
 # Build package
 build: clean
-	poetry build
+	uv build
 
 # Install package locally
 install:
-	poetry install
+	uv sync
 
 # Install development dependencies
 install-dev:
-	poetry install --with dev
+	uv sync --extra dev
 
 # Export requirements
 requirements:
-	poetry export -f requirements.txt --output requirements.txt --without-hashes
-	poetry export -f requirements.txt --output requirements-dev.txt --with dev --without-hashes
+	uv export > requirements.txt
+	uv export --extra dev > requirements-dev.txt
 
 # Run the server
 run:
-	poetry run python -m mockllm
+	uv run python -m mockllm
 
 # Help target
 help:
 	@echo "Available targets:"
 	@echo "  all          : Run setup, lint, and test"
-	@echo "  setup        : Set up development environment with Poetry"
+	@echo "  setup        : Set up development environment with uv"
 	@echo "  test         : Run tests"
 	@echo "  lint         : Run all code quality checks"
 	@echo "  format       : Format code with black and isort"
@@ -76,7 +74,7 @@ help:
 	@echo "  type-check   : Run mypy type checker"
 	@echo "  clean        : Clean up build artifacts"
 	@echo "  build        : Build package"
-	@echo "  install      : Install package with Poetry"
+	@echo "  install      : Install package with uv"
 	@echo "  install-dev  : Install package with development dependencies"
 	@echo "  requirements : Export requirements.txt files"
 	@echo "  run          : Run the server"
