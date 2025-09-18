@@ -1,5 +1,12 @@
 # MockLLM Documentation
 
+<style>
+  .md-typeset h1,
+  .md-content__button {
+    display: none;
+  }
+</style>
+
 <div align="center">
   <img src="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png" alt="MockLLM Logo" width="400">
   <h3>Extensible Mock Server for LLM API Testing</h3>
