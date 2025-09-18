@@ -1,9 +1,9 @@
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png">
-    <img alt="mockllm logo" src="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png" width="300px" height="300px" style="max-width: 100%;">
+    <img alt="mockllm logo" src="https://raw.githubusercontent.com/lukehinds/mockllm/main/assets/logo.png" width="486px" height="150px" style="max-width: 100%;">
   </picture>
-  <h3>MockLLM API's of Providers such as OpenAI, Anthropic</h3>
+  <h3>Extensible Mock Server for LLM API Testing</h3>
 
   <!-- CTA Buttons -->
   <p>
@@ -14,6 +14,10 @@
     <a href="https://discord.gg/pPcjYzGvbS">
       <img src="https://img.shields.io/badge/Chat-Join%20Discord-7289da?style=for-the-badge&logo=discord&logoColor=white" alt="Join Discord"/>
     </a>
+    &nbsp;
+    <a href="https://mockllm.readthedocs.io/">
+      <img src="https://img.shields.io/badge/Docs-Read%20the%20Docs-blue?style=for-the-badge&logo=readthedocs" alt="Documentation"/>
+    </a>
   </p>
 
   <!-- Badges -->
@@ -21,7 +25,7 @@
     <a href="https://opensource.org/licenses/Apache-2.0">
       <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"/>
     </a>
-    <a href="https://github.com/lukehinds/mockllm/actions/workflows/test.yml">
+    <a href="https://github.com/lukehinds/mockllm/actions/workflows/ci.yml">
       <img src="https://github.com/lukehinds/mockllm/actions/workflows/ci.yml/badge.svg" alt="CI Status"/>
     </a>
     <a href="https://pypi.org/project/mockllm/">
@@ -37,19 +41,90 @@
   <br/>
 </div>
 
-An LLM simulator that mimics OpenAI and Anthropic API formats. Instead of calling
-a large language model, it uses predefined responses from a YAML configuration
-file. 
+**MockLLM** is an extensible mock server that simulates Large Language Model APIs for testing, development, and demonstration purposes. With its **plugin-based architecture**, you can easily add new provider emulators without modifying core code.
 
-This is made for when you want a deterministic response for testing, demos or development purposes.
+Perfect for when you need deterministic, configurable responses for testing and evaluations, over expensive live API calls.
 
-## Features
+## ✨ Key Features
 
-- OpenAI and Anthropic compatible API endpoints
-- Streaming support (character-by-character response streaming)
-- Configurable responses via YAML file
-- Hot-reloading of response configurations
-- Mock token counting
+### **Extensible Provider Architecture**
+- **Plugin-based system** - Add new providers without modifying core code
+- **Self-registering providers** - Use simple decorators to register new providers
+- **Dynamic endpoint creation** - Routes are automatically generated from provider metadata
+- **Zero configuration** - Providers work out of the box with sensible defaults
+
+### **Built-in Provider Support**
+- **OpenAI Compatible** - Full support for Chat Completions API
+- **Anthropic Compatible** - Full support for Messages API
+- **Custom Providers** - Easy framework for adding your own providers
+- **Streaming Support** - Character-by-character streaming responses
+- **Model Management** - Centralized model registry with aliasing
+
+### **Developer-Friendly**
+- **Hot Reloading** - Automatic configuration updates without restart
+- **Type Safety** - Full type hints and mypy coverage
+- **Comprehensive Testing** - Well-tested with pytest
+- **Clean Architecture** - Separation of concerns with clear interfaces
+- **API Introspection** - Runtime discovery of providers and models
+
+### **Perfect for Testing (what it was built for)**
+- **Deterministic Responses** - Predictable outputs for reliable tests
+- **Response Configuration** - YAML-based response mapping
+- **Network Lag Simulation** - Realistic latency for integration testing
+- **Multiple Response Formats** - Support for various API formats
+
+## Quick Example
+
+### Basic Usage
+
+```bash
+# Install MockLLM
+pip install mockllm
+
+# Create responses file
+cat > responses.yml << EOF
+responses:
+  "What is 15+15?": "15+15 equals 42."
+  "What is Python?": "Python is a low level compiler language for industrial logic controllers!"
+defaults:
+  unknown_response: "This is a mock response."
+EOF
+
+# Start the server
+mockllm start --responses responses.yml
+
+# Test with curl
+curl -X POST http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-3.5-turbo",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
+```
+
+### Creating a Custom Provider
+
+With MockLLM's extensible architecture, adding a new provider is incredibly simple:
+
+```python
+from mockllm.providers.base import LLMProvider
+from mockllm.registry import register_provider
+
+@register_provider(
+    name="mycompany",
+    version="1.0.0",
+    description="MyCompany LLM Provider",
+    endpoints=[{"path": "/v1/mycompany/chat", "method": "POST"}],
+    supported_models=["mycompany-model-1", "mycompany-model-2"]
+)
+class MyCompanyProvider(LLMProvider):
+    async def handle_chat_completion(self, request):
+        prompt = self.extract_prompt(request)
+        response = self.get_response_for_prompt(prompt)
+        return {"response": response, "provider": "mycompany"}
+```
+
+That's it! No server configuration, no manual registration, no boilerplate. Your provider is automatically discovered and its endpoints are created.
 
 ## Configuration
 
@@ -108,17 +183,30 @@ git clone https://github.com/lukehinds/mockllm.git
 cd mockllm
 ```
 
-2. Install Poetry (if not already installed):
+2. Install with uv (recommended):
 ```bash
-curl -sSL https://install.python-poetry.org | python3 -
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install dependencies
+uv sync
+
+# Install with development dependencies
+uv sync --extra dev
 ```
 
-3. Install dependencies:
+3. Or install with pip:
 ```bash
-poetry install  # Install with all dependencies
-# or
-poetry install --without dev  # Install without development dependencies
+pip install -e .
+
+# Install with development dependencies
+pip install -e ".[dev]"
 ```
+
+### Prerequisites
+
+- Python 3.10+
+- pip or [uv](https://github.com/astral-sh/uv) (recommended)
 
 ## Usage
 
@@ -221,17 +309,66 @@ curl -X POST http://localhost:8000/v1/messages \
   }'
 ```
 
-## Testing
+## 🎯 Why MockLLM?
 
-To run the tests:
+- **💰 Cost Savings** - No API charges during development and testing
+- **⚡ Fast Iteration** - Instant responses without network latency
+- **🔒 Privacy** - Keep sensitive data local during development
+- **🎯 Predictable Testing** - Deterministic responses for reliable tests
+- **🔧 Easy Integration** - Drop-in replacement for LLM APIs
+- **🚀 Extensible** - Add new providers in minutes, not hours
+
+## 📖 Documentation
+
+Comprehensive documentation is available:
+
+- **[📚 Full Documentation](https://mockllm.readthedocs.io/)** - Complete guides and API reference
+- **[🚀 Quick Start Guide](https://mockllm.readthedocs.io/en/latest/getting-started/quick-start/)** - Get running in 5 minutes
+- **[🔌 Provider Development](https://mockllm.readthedocs.io/en/latest/providers/creating-providers/)** - Create custom providers
+- **[⚙️ Configuration Guide](https://mockllm.readthedocs.io/en/latest/configuration/responses/)** - Set up response mappings
+- **[💡 Examples](https://mockllm.readthedocs.io/en/latest/examples/custom-providers/)** - Real-world implementations
+
+## 🧪 Testing
+
+Run the test suite:
 ```bash
-poetry run pytest
+# Using uv
+uv run pytest
+
+# Using make
+make test
+
+# With coverage
+uv run pytest --cov=src/mockllm
 ```
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please open an issue or submit a PR.
+We welcome contributions! Here's how to get started:
 
-## License
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes**
+4. **Run tests**: `make test`
+5. **Run linting**: `make lint`
+6. **Submit a pull request**
+
+For detailed contribution guidelines, see our [Contributing Guide](https://mockllm.readthedocs.io/en/latest/development/contributing/).
+
+## 💬 Community
+
+Join our community:
+
+- **[GitHub Discussions](https://github.com/lukehinds/mockllm/discussions)** - Ask questions and share ideas
+- **[Discord Server](https://discord.gg/pPcjYzGvbS)** - Chat with the community
+- **[Issue Tracker](https://github.com/lukehinds/mockllm/issues)** - Report bugs or request features
+
+## 📄 License
 
 This project is licensed under the [Apache 2.0 License](LICENSE).
+
+---
+
+<div align="center">
+  <b>⭐ Star us on GitHub if MockLLM helps you! ⭐</b>
+</div>
