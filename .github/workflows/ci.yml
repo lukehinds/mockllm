@@ -54,13 +54,5 @@ jobs:
     - name: Install dependencies
       run: uv sync --extra dev
 
-    - name: Check formatting
-      run: |
-        uv run black --check .
-        uv run isort --check .
-
-    - name: Type checking
-      run: uv run mypy src/
-
-    - name: Lint
-      run: uv run ruff check .
+    - name: Lint and type check
+      run: make lint
